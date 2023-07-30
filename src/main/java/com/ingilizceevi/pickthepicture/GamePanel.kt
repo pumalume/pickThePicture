@@ -1,32 +1,24 @@
 package com.ingilizceevi.pickthepicture
 
 import android.animation.AnimatorSet
-import android.graphics.Color
-import android.graphics.Color.green
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Chronometer
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.core.animation.doOnEnd
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import com.ingilizceevi.conceptbuilder.ConceptLoader
+import com.ingilizceevi.frenchconnection.SoundPlayer
 
 private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class GamePanel : Fragment() {
 
-    private var myChapter: String? = null
     lateinit var goSignal:FrameLayout
-    private var studentID:Int? = null
     var numOfImages = 3
     lateinit var imageControl:ImageController
     lateinit var myTimer: Chronometer
@@ -37,21 +29,19 @@ class GamePanel : Fragment() {
     private val gameBrain: LaneViewModel by activityViewModels()
     private var gameFinished = false
     lateinit var playButton: ImageView
-    lateinit var mySound:ImageSound
+    lateinit var soundPlayer: SoundPlayer
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            myChapter = it.getString(ARG_PARAM1)
-            studentID = it.getInt(ARG_PARAM2)
+            val chapter = it.getString(ARG_PARAM1)
         }
-        if(!gameBrain.isGameInitialized()){
-            gameBrain.initiateModel(3, myChapter!!)
-            gameBrain.studentInfo = StudentInfo(studentID)
-            val tempChapter=myChapter!!.substringAfter("chapter").toInt()
-            gameBrain.studentInfo.studentChapter = tempChapter
-        }
+        //if(!gameBrain.isGameInitialized()){
+            soundPlayer = SoundPlayer(requireContext())
+//            val conceptLoader = chapter?.let { ConceptLoader(it) }
+            //gameBrain.initiateModel(chapter!!)
+       // }
 
     }
 
@@ -59,33 +49,39 @@ class GamePanel : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         main =  inflater.inflate(R.layout.fragment_game_panel, container, false)
         myTimer = main.findViewById(R.id.myTimer)
         goSignal = main.findViewById(R.id.signalCircle)
         goSignal.setBackgroundResource(R.drawable.red_circle)
         myClicks = main.findViewById(R.id.myClicks)
         cancelButton= main.findViewById(R.id.cancelButton)
-        cancelButton.setOnClickListener(onCancelClick)
+        //cancelButton.setOnClickListener(onCancelClick)
         playButton = main.findViewById(R.id.playButton)
         playButton.setOnClickListener{playTarget()}
-        mySound=ImageSound(requireContext())
-        //main.setOnClickListener(initiatorClick)
-        observerIsEstablishedForStartGame()
-        observerIsEstablishedForCancelGame()
+        soundPlayer= SoundPlayer(requireContext())
+        main.setOnClickListener(initiatorClick)
+        //observerIsEstablishedForStartGame()
+        //observerIsEstablishedForCancelGame()
         return main
     }
+    val initiatorClick = View.OnClickListener {
+        main.setOnClickListener(null)
+        startGame()
+    }
 
+    fun handleOnCancelButton(): ImageView {
+        return cancelButton
+    }
     val onCancelClick = View.OnClickListener {
-        val myDialog = CancelFragment()
+        val myDialog = DialogFragment()
         myDialog.show(childFragmentManager, "Cancel")
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val myDialog = DialogFragment()
-        myDialog.show(childFragmentManager, "PressStart")
-    }
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        val myDialog = DialogFragment()
+//        myDialog.show(childFragmentManager, "PressStart")
+//    }
 
     fun observerIsEstablishedForCancelGame() {
         val gameIsCancelledObserver = Observer<Boolean> {
@@ -118,10 +114,12 @@ class GamePanel : Fragment() {
     }
 
     fun playTarget(){
-        if(gameBrain.targetConceptAsString()!="") {
+        if(gameBrain.myTargetConcept!="-1") {
             val u = gameBrain.getTargetUri()
-            val player = mySound.playSound(u)
-            player.setOnCompletionListener {
+            val list = mutableListOf(u)
+            soundPlayer.setupSoundSequence(list)
+            val player = soundPlayer.dontStartSoundYet()
+            player!!.setOnCompletionListener {
                 setOnClickListeners()
             }
             player.start()
@@ -191,11 +189,11 @@ class GamePanel : Fragment() {
         val myTime = myTimer.text.toString()
         val myClicks = gameBrain.getTotalClicks().toString()
 
-        gameBrain.studentInfo.studentClicks = myClicks.toInt()
-        gameBrain.studentInfo.studentTime = gameBrain.calculateStudentTime(myTime)
-        childFragmentManager.beginTransaction()
-            .replace(R.id.laneControllerView, ConcludingFragment.newInstance(myTime, myClicks), "Hi")
-            .commit()
+//        gameBrain.studentInfo.studentClicks = myClicks.toInt()
+//        gameBrain.studentInfo.studentTime = gameBrain.calculateStudentTime(myTime)
+//        childFragmentManager.beginTransaction()
+//            .replace(R.id.laneControllerView, ConcludingFragment.newInstance(myTime, myClicks), "Hi")
+//            .commit()
     }
     fun startAnotherRoundOfFun(){
         imageControl.refreshPanelOfImages()
@@ -206,11 +204,10 @@ class GamePanel : Fragment() {
     ////////////////////////////////////////////////////
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2:Int) =
+        fun newInstance(param1: String) =
             GamePanel().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
-                    putInt(ARG_PARAM2, param2)
                 }
             }
     }

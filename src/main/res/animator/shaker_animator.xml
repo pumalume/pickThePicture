@@ -1,0 +1,24 @@
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="sequentially">
+
+    <objectAnimator
+        android:duration="50"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:interpolator="@android:anim/linear_interpolator"
+        android:propertyName="rotation"
+        android:repeatCount="15"
+        android:repeatMode = "reverse"
+        android:valueFrom="8"
+        android:valueTo="-8"
+        android:valueType="floatType"/>
+    <objectAnimator
+        android:duration="0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:interpolator="@android:anim/linear_interpolator"
+        android:propertyName="rotation"
+        android:valueFrom="-8"
+        android:valueTo="0"
+        android:valueType="floatType"/>
+</set>

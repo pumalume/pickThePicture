@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+        <!--
+      <EditText
+          android:id="@+id/enterIP"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="192.168.1.4"
+          android:textSize="20sp" />
+
+      <Button
+          android:id = "@+id/enterLogin"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:text="RETRY"/>
+           -->
+      <Button
+          android:id = "@+id/skipLogin"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_gravity="end"
+          android:text="SKIP"/>
+  </FrameLayout>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/myNamesList"
+                android:orientation="vertical"
+                android:layout_margin="20dp">
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <ImageView
+            android:id = "@+id/userCancel"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:src = "@drawable/cancel" />
+    </FrameLayout>
+</LinearLayout>
+
+
