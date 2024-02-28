@@ -2,6 +2,7 @@
     <string name="app_name">PickThePicture</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="totalTime">Time: %s</string>
+    <string name="totalTime">Time: %s seconds</string>
+    <string name="runningTime">Time: %s </string>
     <string name="totalClicks">Clicks: %s</string>
 </resources>

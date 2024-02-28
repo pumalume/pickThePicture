@@ -9,15 +9,14 @@ import com.ingilizceevi.conceptbuilder.ConceptLoader
 
 class LaneViewModel : ViewModel(){
     var numOfLanes: Int = 3
-    private var gameBrainIsInitialized = false
+    val chapterInfo = GameRecord()
+    var gameBrainIsInitialized = false
     lateinit var masterCollectionDrawables: MutableMap<String, Drawable>
     lateinit var masterCollectionSounds: MutableMap<String, Uri>
     var myTargetConcept : String = "-1"
     private val availableConcepts: MutableList<String> = ArrayList(0)
     private val pileOfDiscardedConcepts:MutableList<String> = ArrayList(0)
     private val idealConceptualMap: MutableMap<Int, String> = mutableMapOf()
-
-    private var clickedCounter = 0
 
     fun initiateModel(chapter:String){
         val concepts_array = ConceptLoader(chapter)
@@ -30,11 +29,6 @@ class LaneViewModel : ViewModel(){
         schemaIsInitializeToBeginGame()
         gameBrainIsInitialized=true
     }
-
-    fun isGameInitialized():Boolean{
-        return gameBrainIsInitialized
-    }
-
     fun getTargetUri(): Uri? {
         return masterCollectionSounds[myTargetConcept]
     }
@@ -109,6 +103,7 @@ class LaneViewModel : ViewModel(){
     }
 
     fun schemaForImageClickedFalse(){
+        chapterInfo.loadConceptIntoResultsArray(myTargetConcept)
         for(index in 0 until numOfLanes){
             val tempConcept = idealConceptualMap[index]
             if(tempConcept!=myTargetConcept) {
@@ -143,12 +138,12 @@ class LaneViewModel : ViewModel(){
         return pileOfDiscardedConcepts[(0..size).random()]
     }
 
-    fun getTotalClicks():Int{return clickedCounter}
+    fun getTotalClicks():Int{return chapterInfo.chapterClicks}
     fun increaseClickedCounter(){
-        clickedCounter++
+        chapterInfo.chapterClicks++
     }
 
-    fun calculateStudentTime(totalTime:String):Int{
+    fun calculateTotalSeconds(totalTime:String):Int{
         val parts = totalTime.split(":")
         val minutes= parts[0].toInt()
         var seconds=parts[1].toInt()
@@ -162,5 +157,22 @@ class LaneViewModel : ViewModel(){
     }
     val cancelGameLiveData: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
+    }
+    val concludedGameLiveData: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
+
+    class GameRecord{
+        var chapterTime:String = ""
+        var chapterClicks:Int = 0
+        val results_array : MutableList<String> = ArrayList(0)
+        fun loadConceptIntoResultsArray(answer:String){
+            results_array.add(answer)
+        }
+        fun getFinalResultsArray():MutableList<String>{
+            results_array.add(chapterTime)
+            results_array.add(chapterClicks.toString())
+            return results_array
+        }
     }
 }

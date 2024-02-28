@@ -18,10 +18,15 @@ class DialogFragment : DialogFragment() {
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         val main = inflater.inflate(R.layout.fragment_dialog, container, false)
-        val button : Button = main.findViewById(R.id.startButton)
-        button.setOnClickListener {
+        val yButton : Button = main.findViewById(R.id.yesButton)
+        val nButton : Button = main.findViewById(R.id.noButton)
+        nButton.setOnClickListener {
             dismiss()
-            gameBrain.startGameLiveData.value = true
+        }
+        yButton.setOnClickListener {
+            gameBrain.cancelGameLiveData.value = true
+            dismiss()
+
         }
         return main
     }
